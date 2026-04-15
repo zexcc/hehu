@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <h2>Upload File (Max 500MB)</h2>
+
+  <input type="file" id="file">
+  <button onclick="upload()">Upload</button>
+
+  <p id="status"></p>
+  <p id="link"></p>
+
+  <script>
+    async function upload() {
+      const file = document.getElementById("file").files[0];
+      if (!file) return alert("Select file");
+
+      if (file.size > 500 * 1024 * 1024) {
+        return alert("Max 500MB");
+      }
+
+      const fd = new FormData();
+      fd.append("file", file);
+
+      document.getElementById("status").innerText = "Uploading...";
+
+      const res = await fetch("/upload", {
+        method: "POST",
+        body: fd
+      });
+
+      const data = await res.json();
+
+      document.getElementById("status").innerText = "Done!";
+      document.getElementById("link").innerHTML =
+        `<a href="${data.downloadUrl}" target="_blank">
+          Download (auto deletes)
+        </a>`;
+    }
+  </script>
+</body>
+</html>
